@@ -1,0 +1,9 @@
+selenium
+webdriver-manager
+beautifulsoup4
+flask
+anthropic
+pymongo
+python-dotenv
+certifi
+flask-cors
