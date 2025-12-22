@@ -28,50 +28,18 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 
-const countries = [
-    { label: "United States", value: "+1", flag: "🇺🇸" },
-    { label: "United Kingdom", value: "+44", flag: "🇬🇧" },
-    { label: "India", value: "+91", flag: "🇮🇳" },
-    { label: "Australia", value: "+61", flag: "🇦🇺" },
-    { label: "Japan", value: "+81", flag: "🇯🇵" },
-    { label: "Germany", value: "+49", flag: "🇩🇪" },
-    { label: "Canada", value: "+1", flag: "🇨🇦" },
-    { label: "France", value: "+33", flag: "🇫🇷" },
-    { label: "Brazil", value: "+55", flag: "🇧🇷" },
-    { label: "China", value: "+86", flag: "🇨🇳" },
-    { label: "Russia", value: "+7", flag: "🇷🇺" },
-    { label: "Italy", value: "+39", flag: "🇮🇹" },
-    { label: "Spain", value: "+34", flag: "🇪🇸" },
-    { label: "Netherlands", value: "+31", flag: "🇳🇱" },
-    { label: "South Korea", value: "+82", flag: "🇰🇷" },
-    { label: "Singapore", value: "+65", flag: "🇸🇬" },
-    { label: "Sweden", value: "+46", flag: "🇸🇪" },
-    { label: "Switzerland", value: "+41", flag: "🇨🇭" },
-    { label: "UAE", value: "+971", flag: "🇦🇪" },
-    { label: "Saudi Arabia", value: "+966", flag: "🇸🇦" },
-    { label: "Mexico", value: "+52", flag: "🇲🇽" },
-    { label: "South Africa", value: "+27", flag: "🇿🇦" },
-    { label: "Turkey", value: "+90", flag: "🇹🇷" },
-    { label: "Indonesia", value: "+62", flag: "🇮🇩" },
-    { label: "Thailand", value: "+66", flag: "🇹🇭" },
-    { label: "Vietnam", value: "+84", flag: "🇻🇳" },
-    { label: "Philippines", value: "+63", flag: "🇵🇭" },
-    { label: "Malaysia", value: "+60", flag: "🇲🇾" },
-    { label: "Poland", value: "+48", flag: "🇵🇱" },
-    { label: "Argentina", value: "+54", flag: "🇦🇷" },
-].sort((a, b) => a.label.localeCompare(b.label));
 
 export function SignupForm({ onClose }: { onClose?: () => void }) {
     const formRef = useRef<HTMLFormElement>(null);
     const [open, setOpen] = useState(false);
-    const [countryCode, setCountryCode] = useState("+1");
+    // const [countryCode, setCountryCode] = useState("+1"); // Removed
 
     const handleSave = async () => {
         if (formRef.current && formRef.current.reportValidity()) {
             try {
                 const formData = new FormData(formRef.current);
                 const data: any = Object.fromEntries(formData.entries());
-                data.country_code = countryCode;
+                // data.country_code = countryCode; // Removed
 
                 const response = await fetch('/api/waitlist', {
                     method: 'POST',
@@ -150,64 +118,13 @@ export function SignupForm({ onClose }: { onClose?: () => void }) {
 
                 <LabelInputContainer className="mb-4">
                     <Label htmlFor="phone" className="text-neutral-200">Phone Number</Label>
-                    <div className="flex gap-2">
-                        <Popover open={open} onOpenChange={setOpen}>
-                            <PopoverTrigger asChild>
-                                <Button
-                                    variant="outline"
-                                    role="combobox"
-                                    aria-expanded={open}
-                                    className="w-[120px] justify-between bg-neutral-900 border-neutral-800 text-white hover:bg-neutral-800 hover:text-white"
-                                >
-                                    {countryCode ? (
-                                        <span className="flex items-center gap-1 truncate">
-                                            <span>{countries.find((country) => country.value === countryCode)?.flag}</span>
-                                            <span>{countryCode}</span>
-                                        </span>
-                                    ) : (
-                                        "Code"
-                                    )}
-                                    <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-[250px] p-0">
-                                <Command>
-                                    <CommandInput placeholder="Search country..." />
-                                    <CommandList>
-                                        <CommandEmpty>No country found.</CommandEmpty>
-                                        <CommandGroup>
-                                            {countries.map((country) => (
-                                                <CommandItem
-                                                    key={country.label}
-                                                    value={country.label}
-                                                    onSelect={() => {
-                                                        setCountryCode(country.value === countryCode ? "" : country.value);
-                                                        setOpen(false);
-                                                    }}
-                                                >
-                                                    <Check
-                                                        className={cn(
-                                                            "mr-2 h-4 w-4",
-                                                            countryCode === country.value ? "opacity-100" : "opacity-0"
-                                                        )}
-                                                    />
-                                                    <span className="mr-2">{country.flag}</span>
-                                                    {country.label} ({country.value})
-                                                </CommandItem>
-                                            ))}
-                                        </CommandGroup>
-                                    </CommandList>
-                                </Command>
-                            </PopoverContent>
-                        </Popover>
-                        <Input
-                            id="phone"
-                            name="phone"
-                            placeholder="123 456 7890"
-                            type="tel"
-                            className="flex-1 bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-600 focus:border-red-500 focus:ring-red-500/20"
-                        />
-                    </div>
+                    <Input
+                        id="phone"
+                        name="phone"
+                        placeholder="123 456 7890"
+                        type="tel"
+                        className="bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-600 focus:border-red-500 focus:ring-red-500/20"
+                    />
                 </LabelInputContainer>
 
                 <LabelInputContainer className="mb-8">
