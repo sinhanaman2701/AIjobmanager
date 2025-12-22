@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 export function GlowingFeatures() {
     return (
-        <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-12">
+        <div className="w-full max-w-7xl mx-auto px-4 md:px-8 py-24 md:py-32">
             <h2 className="text-3xl md:text-5xl font-bold text-center mb-12 text-[#fafaf9]">
                 Everything you need to <span className="text-neutral-400">land your dream job.</span>
             </h2>

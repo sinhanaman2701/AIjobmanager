@@ -1,13 +1,10 @@
 "use client";
 import {
-    useMotionValueEvent,
     useScroll,
     useTransform,
     motion,
 } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
-
-import { CharacterV1 } from "@/components/ui/text-scroll-animation";
 
 interface TimelineEntry {
     title: string;
@@ -36,20 +33,8 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
         offset: ["start 10%", "end 20%"],
     });
 
-    // Separate scroll progerss for the title to animate immediately upon entry
-    const { scrollYProgress: titleScroll } = useScroll({
-        target: titleRef,
-        offset: ["start 0.9", "start 0.5"], // Starts when top of section hits 90% of viewport height
-    });
-
-
     const heightTransform = useTransform(scrollYProgress, [0, 1], [0, 1]);
     const opacityTransform = useTransform(scrollYProgress, [0, 0.1], [0, 1]);
-
-    const titleText = "How JobMatcher Works";
-    const titleCenterIndex = Math.floor(titleText.length / 2);
-    const words = titleText.split(" ");
-    let charIndexCounter = 0;
 
     return (
         <div
@@ -58,26 +43,11 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
         >
             <div
                 ref={titleRef}
-                className="max-w-7xl mx-auto py-12 px-4 md:px-8 lg:px-10 mb-12"
+                className="max-w-7xl mx-auto pt-24 pb-4 px-4 md:px-8 lg:px-10 md:pt-32 md:pb-10"
             >
                 <div className="flex justify-center mb-8 w-full">
-                    <h2 className="w-full text-center text-3xl md:text-5xl font-bold flex flex-wrap justify-center gap-x-3 gap-y-1">
-                        {words.map((word, wordIndex) => (
-                            <span key={wordIndex} className="inline-flex whitespace-nowrap gap-x-[0.1em]">
-                                {word.split("").map((char, charIndex) => {
-                                    const globalIndex = charIndexCounter++;
-                                    return (
-                                        <CharacterV1
-                                            key={globalIndex}
-                                            char={char}
-                                            index={globalIndex}
-                                            centerIndex={titleCenterIndex}
-                                            scrollYProgress={titleScroll}
-                                        />
-                                    );
-                                })}
-                            </span>
-                        ))}
+                    <h2 className="text-3xl md:text-5xl font-bold text-center mb-12 text-[#fafaf9]">
+                        How Job Matcher <span className="text-neutral-400">Works</span>
                     </h2>
                 </div>
 
@@ -90,7 +60,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
                 {data.map((item, index) => (
                     <div
                         key={index}
-                        className="flex justify-start pt-12 md:pt-32 md:gap-10"
+                        className="flex justify-start pt-12 md:pt-20 md:gap-10"
                     >
                         <div className="sticky flex flex-col md:flex-row z-40 items-center top-40 self-start max-w-xs lg:max-w-sm md:w-full">
                             <div className="h-10 absolute left-3 md:left-3 w-10 rounded-full bg-[#0c0a09] flex items-center justify-center">

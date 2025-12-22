@@ -10,7 +10,6 @@ import { GlowingFeatures } from "@/components/ui/glowing-features";
 import { ScrollDownArrow } from "@/components/ui/scroll-down-arrow";
 import { ScannerCardStream } from "@/components/ui/scanner-card-stream";
 import { Timeline } from "@/components/ui/timeline";
-import { ScrollIndicator } from "@/components/ui/text-scroll-animation";
 import { WordHeroPage } from "@/components/ui/scroll-hero-section";
 import MatchSection from "@/components/ui/match-section";
 import ApplySection from "@/components/ui/apply-section";
@@ -86,7 +85,7 @@ export default function Home() {
                     </div>
                 </div>
 
-                <ScrollIndicator />
+
             </section>
 
             {/* TIMELINE SECTION (How it Works) - 2nd Section */}
