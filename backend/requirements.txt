@@ -7,3 +7,5 @@ pymongo
 python-dotenv
 certifi
 flask-cors
+flask-limiter
+email-validator
