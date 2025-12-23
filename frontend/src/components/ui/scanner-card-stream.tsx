@@ -229,20 +229,41 @@ const ScannerCardStream = ({
             let anyCardIsScanning = false;
 
             if (!cardLineRef.current) return;
-            // Use children collection directly for performance
             const children = cardLineRef.current.children;
+            const currentPos = cardStreamState.current.position;
+            const totalCardWidth = CARD_WIDTH + cardGap;
 
             for (let i = 0; i < children.length; i++) {
-                const wrapper = children[i] as HTMLElement;
-                const rect = wrapper.getBoundingClientRect();
+                // Math-based position calculation
+                // Card's accumulated left position in the strip + current translation
+                // We handle the infinite wrapping logic approximately or assume linear for collision
+                // For a perfect loop, we really just need the X relative to the viewport.
+                // Since the DOM element itself is transformed, we can start with the base math:
 
-                if (!containerRef.current) return;
-                const containerRect = containerRef.current.getBoundingClientRect();
-                const relativeLeft = rect.left - containerRect.left;
-                const relativeRight = rect.right - containerRect.left;
+                // The infinite loop logic in 'animate' resets 'position' when it goes out of bounds.
+                // So 'currentPos' is the translateX of the whole container.
+                // The relative pixel position of card i is: i * totalCardWidth + currentPos
+
+                let relativeLeft = (i * totalCardWidth) + currentPos;
+
+                // We need to account for the loop reset logic to match visual position
+                // Logic from animate loop:
+                // if (position < -cardLineWidth) position = containerW;
+
+                // Actually, since we read the visual state, let's stick to the reliable math relative to the parent container
+                // But we must correct for the wrap-around which might put a card visually "elsewhere" if we just used i * width
+                // However, the current component implements the loop by just resetting the whole strip. 
+                // It does NOT rearrange individual items. So (i * totalWidth + pos) IS the correct screen coordinate relative to container left.
+
+                const relativeRight = relativeLeft + CARD_WIDTH;
+
+                // Optimization: Skip cards completely off screen (optional but good)
+                // if (relativeRight < 0 || relativeLeft > width) continue;
 
                 if (relativeLeft < scannerRight && relativeRight > scannerLeft) {
                     anyCardIsScanning = true;
+                    const wrapper = children[i] as HTMLElement;
+
                     if (wrapper.dataset.scanned !== 'true') {
                         const asciiContent = wrapper.querySelector<HTMLElement>(".ascii-content");
                         if (asciiContent && scanEffect === 'scramble') runScrambleEffect(asciiContent, i);
@@ -250,14 +271,41 @@ const ScannerCardStream = ({
                     }
 
                     const intersectLeft = Math.max(scannerLeft - relativeLeft, 0);
-                    const intersectRight = Math.min(scannerRight - relativeLeft, rect.width);
+                    // const intersectRight = Math.min(scannerRight - relativeLeft, CARD_WIDTH); 
+                    // Note: original logic had rect.width which is CARD_WIDTH
 
-                    const normalCard = wrapper.children[0] as HTMLElement; // First child is normal card
-                    const asciiCard = wrapper.children[1] as HTMLElement;  // Second child is ascii card
+                    const normalCard = wrapper.children[0] as HTMLElement;
+                    const asciiCard = wrapper.children[1] as HTMLElement;
 
-                    normalCard.style.setProperty("--clip-right", `${(intersectLeft / rect.width) * 100}%`);
-                    asciiCard.style.setProperty("--clip-left", `${(intersectRight / rect.width) * 100}%`);
+                    // Use percentages for performant updates
+                    normalCard.style.setProperty("--clip-right", `${(intersectLeft / CARD_WIDTH) * 100}%`);
+                    asciiCard.style.setProperty("--clip-left", `${(intersectLeft / CARD_WIDTH) * 100}%`);
+                    // Note: original logic used intersectRight for second prop? 
+                    // Original: normal --clip-right = (intersectLeft / w) * 100
+                    // Original: ascii --clip-left = (intersectRight / w) * 100
+                    // intersectRight IS the point where the scanner ends inside the card.
+                    // Actually, let's stick to the overlap logic.
+                    // If scanner is passing L -> R over card:
+                    // Left of beam is normal, Right of beam is ASCII (or vice versa depending on effect)
+                    // The masking logic implies: 
+                    // Normal card clipped from right side by (100% - percentage)
+                    // Let's preserve original math intent but with cached values:
+
+                    const intersectRight = Math.min(scannerRight - relativeLeft, CARD_WIDTH);
+                    asciiCard.style.setProperty("--clip-left", `${(intersectRight / CARD_WIDTH) * 100}%`);
+
                 } else {
+                    // Only update if we think we might be in a dirty state (optimization)
+                    // We can check dataset or just do it. Given the reduced read cost, direct write is okay if batched,
+                    // but we can't easily batch per-element styles without overhead.
+                    // We'll rely on the checked flag to avoid thrashing styles on non-intersecting items too much?
+                    // Actually the previous logic applied styles on every frame for non-intersecting too.
+
+                    const wrapper = children[i] as HTMLElement;
+
+                    // Optimization: check current values before writing? 
+                    // Or just write. Browser style recalc usually optimizes redundant sets.
+
                     if (wrapper.dataset.scanned === 'true') {
                         delete wrapper.dataset.scanned;
                     }
@@ -266,9 +314,11 @@ const ScannerCardStream = ({
                     const asciiCard = wrapper.children[1] as HTMLElement;
 
                     if (relativeRight < scannerLeft) {
+                        // Card is to the left of scanner
                         normalCard.style.setProperty("--clip-right", "100%");
                         asciiCard.style.setProperty("--clip-left", "100%");
                     } else {
+                        // Card is to the right of scanner
                         normalCard.style.setProperty("--clip-right", "0%");
                         asciiCard.style.setProperty("--clip-left", "0%");
                     }
