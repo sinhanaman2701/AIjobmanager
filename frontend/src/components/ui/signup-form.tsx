@@ -128,16 +128,16 @@ export function SignupForm({ onClose }: { onClose?: () => void }) {
                 </LabelInputContainer>
 
                 <LabelInputContainer className="mb-8">
-                    <Label htmlFor="reason" className="text-neutral-200">Why do you want to use Job Assistant?</Label>
+                    <Label htmlFor="reason" className="text-neutral-200">Profession</Label>
                     <Select name="reason">
                         <SelectTrigger id="reason" className="bg-neutral-900 border-neutral-800 text-white shadow-input h-10 focus:ring-red-500/20 focus:border-red-500">
-                            <SelectValue placeholder="Select a reason" />
+                            <SelectValue placeholder="Select your profession" />
                         </SelectTrigger>
                         <SelectContent className="bg-neutral-900 border-neutral-800 text-white">
-                            <SelectItem value="job-search">Active Job Search</SelectItem>
-                            <SelectItem value="career-change">Planning Career Change</SelectItem>
-                            <SelectItem value="market-research">Market Research</SelectItem>
-                            <SelectItem value="recruiting">Recruiting/Hiring</SelectItem>
+                            <SelectItem value="product-management">Product Management</SelectItem>
+                            <SelectItem value="software-engineering">Software Engineering</SelectItem>
+                            <SelectItem value="digital-marketing">Digital Marketing</SelectItem>
+                            <SelectItem value="ui-ux-designer">UI/UX Designer</SelectItem>
                             <SelectItem value="other">Other</SelectItem>
                         </SelectContent>
                     </Select>
