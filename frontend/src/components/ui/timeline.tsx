@@ -47,7 +47,7 @@ export const Timeline = ({ data }: { data: TimelineEntry[] }) => {
             >
                 <div className="flex justify-center mb-8 w-full">
                     <h2 className="text-3xl md:text-5xl font-bold text-center mb-12 text-[#fafaf9]">
-                        How Job Matcher <span className="text-neutral-400">Works</span>
+                        How Spotlight AI <span className="text-neutral-400">Works</span>
                     </h2>
                 </div>
 
